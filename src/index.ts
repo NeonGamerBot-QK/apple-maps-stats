@@ -1,17 +1,7 @@
 //@ts-ignore
 import { MailListener } from "mail-listener5";
-enum Phrases {
-  STARTING,
-  UPDATED,
-  ENDING,
-  UNK = -1,
-}
-type StrResult = {
-  phrase: string;
-  type: Phrases;
-  location: string;
-  timestamp?: string;
-};
+import { parseStr, Phrases } from "./util";
+import { Database } from "bun:sqlite";
 if (!Bun.env["MAIL_USERNAME"]) {
   console.log("MAIL_USERNAME not set");
   process.exit(1);
@@ -24,40 +14,21 @@ if (!Bun.env["MAIL_HOST"]) {
   console.log("MAIL_HOST not set");
   process.exit(1);
 }
-const startANDEnd = (content: string, start: string, end: string) => {
-  if (content.includes(start) && content.includes(end)) {
-    console.log(content);
-    return true;
-  }
-  return false;
-};
-const parseStr = (content: string) => {
-  const arrivalRegex =
-    /I will arrive at (.*) around (.*)\. I'll let you know if i'm running late\./;
-  const updatedRegex = /My updated arrival time to (.*) is now around (.*)\./;
-  const endingRegex = /I'm arriving at (.*) soon/;
-  const result: StrResult = {
-    phrase: content,
-    type: Phrases.UNK,
-    location: "",
-  };
-  if (content.match(arrivalRegex)) {
-    result.type = Phrases.STARTING;
-    result.location = arrivalRegex.exec(content)![1];
-    result.timestamp = arrivalRegex.exec(content)![2];
-  } else if (content.match(updatedRegex)) {
-    result.type = Phrases.UPDATED;
-    result.location = updatedRegex.exec(content)![1];
-    result.timestamp = updatedRegex.exec(content)![2];
-  } else if (content.match(endingRegex)) {
-    result.type = Phrases.ENDING;
-    result.location = endingRegex.exec(content)![1];
-  }
-  return result;
-};
-// console.log(parseStr("I'm arriving at [location] soon."))
-// console.log(parseStr("My updated arrival time to [location] is now around [timestamp]."))
-// console.log(parseStr("I will arrive at <location> around <timestamp>. I'll let you know if i'm running late."))
+const db = new Database("db.db", {
+  create: true,
+  readwrite: true,
+});
+// enable WAL
+db.exec("PRAGMA journal_mode = WAL;");
+db.run("CREATE TABLE IF NOT EXISTS apple_maps_stats (email TEXT PRIMARY KEY, last_updated TEXT, location TEXT, timestamp TEXT, heartbeat INT DEFAULT 0)");
+
+//test db
+// db.query("INSERT INTO apple_maps_stats (email, last_updated, location, timestamp) VALUES ($email, $last_updated, $loc, $t)").run({ 
+//   $email: "neon@saahild.com",
+//   $last_updated: "2023-03-01",
+//   $loc: "1600 Pennsylvania Avenue NW",
+//   $t: "8:00 PM",
+// });
 const mailListener = new MailListener({
   username: Bun.env["MAIL_USERNAME"].toString(),
   password: Bun.env["MAIL_PASSWORD"].toString(),
@@ -88,6 +59,7 @@ mailListener.on("mail", function (mail, seqno, attributes) {
   // based on content create json map
   const parsed = parseStr(content);
   console.debug(parsed);
+  console.debug(`from`, mail.from[0])
   switch (parsed.type) {
     case Phrases.STARTING:
       console.log("starting");

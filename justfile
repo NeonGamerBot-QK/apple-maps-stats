@@ -1,4 +1,6 @@
 run: 
-    bun run index.ts
+    bun run src/index.ts
 dev: 
-    bun run --hot index.ts
+    bun run --hot src/index.ts
+test:
+    bun test
