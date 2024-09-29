@@ -1,0 +1,14 @@
+{
+  "name": "apple-maps-stats",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "^1.1.10"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "mail-listener5": "^2.1.2"
+  }
+}
