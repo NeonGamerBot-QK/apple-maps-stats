@@ -20,10 +20,12 @@ const db = new Database("db.db", {
 });
 // enable WAL
 db.exec("PRAGMA journal_mode = WAL;");
-db.run("CREATE TABLE IF NOT EXISTS apple_maps_stats (email TEXT PRIMARY KEY, last_updated TEXT, location TEXT, timestamp TEXT, heartbeat INT DEFAULT 0)");
+db.run(
+  "CREATE TABLE IF NOT EXISTS apple_maps_stats (email TEXT PRIMARY KEY, last_updated TEXT, location TEXT, timestamp TEXT, heartbeat INT DEFAULT 0)",
+);
 
 //test db
-// db.query("INSERT INTO apple_maps_stats (email, last_updated, location, timestamp) VALUES ($email, $last_updated, $loc, $t)").run({ 
+// db.query("INSERT INTO apple_maps_stats (email, last_updated, location, timestamp) VALUES ($email, $last_updated, $loc, $t)").run({
 //   $email: "neon@saahild.com",
 //   $last_updated: "2023-03-01",
 //   $loc: "1600 Pennsylvania Avenue NW",
@@ -59,7 +61,7 @@ mailListener.on("mail", function (mail, seqno, attributes) {
   // based on content create json map
   const parsed = parseStr(content);
   console.debug(parsed);
-  console.debug(`from`, mail.from[0])
+  console.debug(`from`, mail.from[0]);
   switch (parsed.type) {
     case Phrases.STARTING:
       console.log("starting");
