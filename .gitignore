@@ -4,3 +4,4 @@
 *.db-wal
 .env
 node_modules
+attachments
