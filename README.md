@@ -4,7 +4,7 @@
 
 This bun app will use att mms to recive IOS sms updates when share your ETA with someone on apple maps. <br />
 This app can be used to compile data on what happens when your going to point b. 
-this includes such as delays, new arrival times, etc.
+Including such as delays, new arrival times, etc.
 
 ## Installation
 To install dependencies:
@@ -20,4 +20,5 @@ bun run index.ts
 ```
 
 This project was created using `bun init` in bun v1.1.9. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+<br />
 ![apple](https://matdoes.dev/buttons/i/2492c2233bfbf4263aaee35bd4045b03.gif)
